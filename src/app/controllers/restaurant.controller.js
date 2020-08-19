@@ -7,7 +7,7 @@ class Restaurant {
             if (err) {
                 res.status(500).send({ message: 'Error processing your request', error: err })
             } else {
-                res.status(201).send({ message: 'Restaurants successfully recovered', restaurant: data })
+                res.status(200).send({ message: 'Restaurants successfully recovered', restaurant: data })
             }
         })
     }
@@ -19,7 +19,7 @@ class Restaurant {
             if (err) {
                 res.status(500).send({ message: 'Error processing your request', error: err })
             } else {
-                res.status(201).send({ message: `Restaurant ${name} successfully recovered`, restaurant: data })
+                res.status(200).send({ message: `Restaurant ${name} successfully recovered`, restaurant: data })
             }
         })
     }
@@ -36,7 +36,15 @@ class Restaurant {
         })
     }
 
-    
+    updateRestaurant(req, res) {
+        restaurantschema.updateOne({ name: req.params.name }, { $set: req.body }, (err) => {
+            if (err) {
+                res.status(500).send({ message: 'Error processing your request', error: err })
+            } else {
+                res.status(200).send({ message: 'Restaurant successfully updated' })
+            }
+        })
+    }
 
 }
 
