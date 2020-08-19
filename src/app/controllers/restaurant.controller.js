@@ -1,0 +1,31 @@
+const restaurantschema = require('./../models/restaurant.model');
+const { request } = require('express');
+
+class Restaurant {
+    getAllRestaurants(req, res) {
+        restaurantschema.find({}, (err, data) => {
+            if (err) {
+                res.status(500).send({ message: 'Error processing your request', error: err })
+            } else {
+                res.status(201).send({ message: 'Restaurants successfully recovered', restaurant: data })
+            }
+        })
+    }
+
+    createRestaurant(req, res) {
+        const body = req.body;
+
+        restaurantschema.create(body, (err, data) => {
+            if (err) {
+                res.status(500).send({ message: 'Error processing your request', error: err })
+            } else {
+                res.status(201).send({ message: 'Restaurant successfully created', restaurant: data })
+            }
+        })
+    }
+
+    
+
+}
+
+module.exports = new Restaurant()
