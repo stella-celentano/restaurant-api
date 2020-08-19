@@ -6,6 +6,8 @@ const cors = require('cors');
 const PORT = process.env.PORT || 3000;
 const database = require('./src/config/database')
 
+const RestaurantsRoutes = require('./src/app/routes/restaurant.routes');
+
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.text())
 app.use(bodyParser.json({ type: 'application/json' }))
@@ -18,7 +20,9 @@ app.use((req, res, next) => {
     next() 
 })
 
-app.use('/', (req, res) => res.send({ message: `API listening in port ${PORT}` }) )
+app.get('/', (req, res) => res.send({ message: `API listening in port ${PORT}` }) )
+
+app.use('/restaurant', RestaurantsRoutes);
 
 app.use('*', (req, res) => res.send({ message: 'API not found' }))
 
