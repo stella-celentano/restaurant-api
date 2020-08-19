@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3000;
 const database = require('./src/config/database')
 
 const RestaurantsRoutes = require('./src/app/routes/restaurant.routes');
+const ChefRoutes = require('./src/app/routes/chef.routes');
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.text())
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => res.send({ message: `API listening in port ${PORT}` }) )
 
 app.use('/restaurant', RestaurantsRoutes);
+app.use('/chef', ChefRoutes);
 
 app.use('*', (req, res) => res.send({ message: 'API not found' }))
 
