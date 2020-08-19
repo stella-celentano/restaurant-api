@@ -46,6 +46,18 @@ class Restaurant {
         })
     }
 
+    deleteRestaurant(req, res) {
+        const { name } = req.params
+
+        restaurantschema.deleteOne({ name }, (err) => {
+            if (err) {
+                res.status(500).send({ message: 'Error processing your request', error: err })
+            } else {
+                res.status(200).send({ message: `Restaurant ${name} successfully deleted` })
+            }
+        })
+    }
+
 }
 
 module.exports = new Restaurant()
