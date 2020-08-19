@@ -12,6 +12,18 @@ class Restaurant {
         })
     }
 
+    getRestaurantByName(req, res) {
+        const { name } = req.params
+
+        restaurantschema.findOne({ name }, (err, data) => {
+            if (err) {
+                res.status(500).send({ message: 'Error processing your request', error: err })
+            } else {
+                res.status(201).send({ message: `Restaurant ${name} successfully recovered`, restaurant: data })
+            }
+        })
+    }
+
     createRestaurant(req, res) {
         const body = req.body;
 
