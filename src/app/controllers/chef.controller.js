@@ -1,26 +1,32 @@
 const chefschema = require('./../models/chef.model');
+const restaurantschema = require('./../models/restaurant.model');
 
 class Chef {
     getAllChefs(req, res) {
-        chefschema.find({}, (err, data) => {
-            if (err) {
-                res.status(500).send({ message: 'Error processing your request', error: err })
-            } else {
-                res.status(200).send({ message: 'Chefs successfully recovered', chef: data })
-            }
-        })
+        chefschema.find({})
+            .populate('restaurant')
+            .exec((err, data) => {
+                if (err) {
+                    res.status(500).send({ message: 'Error processing your request', error: err })
+                } else {
+                    res.status(200).send({ message: 'Chefs successfully recovered', chef: data })
+                }
+            })
     }
 
     getChefByName(req, res) {
+        const body = req.body
         const { name } = req.params
 
-        chefschema.findOne({ name }, (err, data) => {
-            if (err) {
-                res.status(500).send({ message: 'Error processing your request', error: err })
-            } else {
-                res.status(200).send({ message: `Chef ${name} successfully recovered`, chef: data })
-            }
-        })
+        chefschema.findOne({ name })
+            .populate('restaurant')
+            .exec((err, data) => {
+                if (err) {
+                    res.status(500).send({ message: 'Error processing your request', error: err })
+                } else {
+                    res.status(200).send({ message: `Chef ${name} successfully recovered`, chef: data })
+                }
+            })
     }
 
     createChef(req, res) {
@@ -30,7 +36,24 @@ class Chef {
             if (err) {
                 res.status(500).send({ message: 'Error processing your request', error: err })
             } else {
-                res.status(201).send({ message: 'Chef successfully created', chef: data })
+                if (data.restaurant == undefined) {
+                    res.status(201).send({ message: 'Chef successfully created', chef: data })
+                } else {
+                    restaurantschema.findById({ _id: data.restaurant }, (err, restaurant) => {
+                        if (err) {
+                            res.status(500).send({ message: 'Error processing your request', error: err })
+                        } else {
+                            restaurant.chefs.push(data._id)
+                            restaurantschema.updateOne({ _id: data.restaurant }, { $set: restaurant }, (error, result) => {
+                                if (error) {
+                                    res.status(500).send({ message: 'Error processing your request', error: error })
+                                } else {
+                                    res.status(201).send({ message: 'Chef successfully created', chef: data })
+                                }
+                            })
+                        }
+                    })
+                }
             }
         })
     }

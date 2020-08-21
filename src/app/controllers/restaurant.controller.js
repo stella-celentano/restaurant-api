@@ -1,27 +1,30 @@
 const restaurantschema = require('./../models/restaurant.model');
-const { request } = require('express');
 
 class Restaurant {
     getAllRestaurants(req, res) {
-        restaurantschema.find({}, (err, data) => {
-            if (err) {
-                res.status(500).send({ message: 'Error processing your request', error: err })
-            } else {
-                res.status(200).send({ message: 'Restaurants successfully recovered', restaurant: data })
-            }
-        })
+        restaurantschema.find({})
+            .populate('chefs')
+            .exec((err, data) => {
+                if (err) {
+                    res.status(500).send({ message: 'Error processing your request', error: err })
+                } else {
+                    res.status(200).send({ message: 'Restaurants successfully recovered', restaurant: data })
+                }
+            })
     }
 
     getRestaurantByName(req, res) {
         const { name } = req.params
 
-        restaurantschema.findOne({ name }, (err, data) => {
-            if (err) {
-                res.status(500).send({ message: 'Error processing your request', error: err })
-            } else {
-                res.status(200).send({ message: `Restaurant ${name} successfully recovered`, restaurant: data })
-            }
-        })
+        restaurantschema.findOne({ name })
+            .populate('chefs')
+            .exec((err, data) => {
+                if (err) {
+                    res.status(500).send({ message: 'Error processing your request', error: err })
+                } else {
+                    res.status(200).send({ message: `Restaurant ${name} successfully recovered`, restaurant: data })
+                }
+            })
     }
 
     createRestaurant(req, res) {
@@ -57,7 +60,6 @@ class Restaurant {
             }
         })
     }
-
 }
 
 module.exports = new Restaurant()
