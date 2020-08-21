@@ -11,6 +11,11 @@ const RestaurantSchema = new Schema({
         required: true,
         trim: true
     },
+    city: {
+        type: String,
+        required: true,
+        trim: true
+    },
     address: {
         type: String,
         required: true,
@@ -18,9 +23,13 @@ const RestaurantSchema = new Schema({
     },
     typeFood: {
         type: String,
-        required: true,
+        required: false,
         trim: true
-    }
+    },
+    chefs: [{
+        type: Schema.Types.ObjectId,
+        ref: 'chefschema'
+    }]
 },
     {
         timestamps: true,
