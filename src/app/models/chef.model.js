@@ -16,6 +16,10 @@ const ChefSchema = new Schema({
         required: false,
         trim: true
     },
+    imagem: {
+        type: String,
+        trim: true
+    },
     restaurant: {
         type: Schema.Types.ObjectId,
         ref: 'restaurantschema'
