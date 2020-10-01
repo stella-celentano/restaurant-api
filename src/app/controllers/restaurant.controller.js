@@ -4,7 +4,7 @@ const chefschema = require('./../models/chef.model');
 class Restaurant {
     getAllRestaurants(req, res) {
         restaurantschema.find({})
-            .populate('chefs', { name: 1, imagem: 1 })
+            .populate('chef', { name: 1, imagem: 1 })
             .sort({ name: 1 })
             .exec((err, data) => {
                 if (err) {
@@ -27,7 +27,7 @@ class Restaurant {
         }
 
         restaurantschema.findOne({ name })
-            .populate('chefs', { name: 1, imagem: 1 })
+            .populate('chef', { name: 1, imagem: 1 })
             .exec((err, data) => {
                 if (err) {
                     res.status(500).send({ message: 'Error processing your request', error: err })
@@ -35,7 +35,7 @@ class Restaurant {
                     if (data == null) {
                         res.status(200).send({ message: `The restaurant ${name} was not found in the database` })
                     } else {
-                        res.status(200).send({ message: `Restaurant ${name} successfully recovered`, restaurant: data })
+                        res.status(200).send({ message: `Restaurant ${name} successfully recovered`, data: data })
                     }
                 }
             })
@@ -43,26 +43,30 @@ class Restaurant {
 
     createRestaurant(req, res) {
         const body = req.body;
-        const idChef = body['chefs']
+        const idChef = body['chef']
 
         restaurantschema.create(body, (err, restaurant) => {
             if (err) {
                 res.status(500).send({ message: 'Error processing your request', error: err })
             } else {
-                chefschema.findById(idChef, (err, chef) => {
-                    if (err) {
-                        res.status(500).send({ message: 'Error processing your request', error: err })
-                    } else {
-                        chef.restaurant = restaurant
-                        chef.save({}, (err) => {
-                            if (err) {
-                                res.status(500).send({ message: 'Error processing your request', error: err })
-                            } else {
-                                res.status(201).send({ message: 'Restaurant successfully created', data: restaurant })
-                            }
-                        })
-                    }
-                })
+                if (restaurant.chef == undefined || restaurant.chef == null) {
+                    res.status(201).send({ message: 'Restaurant successfully created', data: restaurant })
+                } else {
+                    chefschema.findById(idChef, (err, chef) => {
+                        if (err) {
+                            res.status(500).send({ message: 'Error processing your request', error: err })
+                        } else {
+                            chef.restaurant = restaurant
+                            chef.save({}, (err) => {
+                                if (err) {
+                                    res.status(500).send({ message: 'Error processing your request', error: err })
+                                } else {
+                                    res.status(201).send({ message: 'Restaurant successfully created', data: restaurant })
+                                }
+                            })
+                        }
+                    })
+                }
             }
         })
     }

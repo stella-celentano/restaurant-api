@@ -50,20 +50,24 @@ class Chef {
             if (err) {
                 res.status(500).send({ message: 'Error processing your request', error: err })
             } else {
-                restaurantschema.findById(idRestaurant, (err, restaurant) => {
-                    if (err) {
-                        res.status(500).send({ message: 'Error processing your request', error: err })
-                    } else {
-                        restaurant.chefs.push(chef)
-                        restaurant.save({}, (err) => {
-                            if (err) {
-                                res.status(500).send({ message: 'Error processing your request', error: err })
-                            } else {
-                                res.status(201).send({ message: 'Chef successfully created', data: chef })
-                            }
-                        })
-                    }
-                })
+                if (chef.restaurant == undefined) {
+                    res.status(201).send({ message: 'Chef successfully created', data: chef })
+                } else {
+                    restaurantschema.findById(idRestaurant, (err, restaurant) => {
+                        if (err) {
+                            res.status(500).send({ message: 'Error processing your request', error: err })
+                        } else {
+                            restaurant.chef = chef
+                            restaurant.save({}, (err) => {
+                                if (err) {
+                                    res.status(500).send({ message: 'Error processing your request', error: err })
+                                } else {
+                                    res.status(201).send({ message: 'Chef successfully created', data: chef })
+                                }
+                            })
+                        }
+                    })
+                }
             }
         })
     }
