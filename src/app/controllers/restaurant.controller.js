@@ -43,30 +43,12 @@ class Restaurant {
 
     createRestaurant(req, res) {
         const body = req.body;
-        const idChef = body['chef']
 
         restaurantschema.create(body, (err, restaurant) => {
             if (err) {
                 res.status(500).send({ message: 'Error processing your request', error: err })
             } else {
-                if (restaurant.chef == undefined || restaurant.chef == null) {
-                    res.status(201).send({ message: 'Restaurant successfully created', data: restaurant })
-                } else {
-                    chefschema.findById(idChef, (err, chef) => {
-                        if (err) {
-                            res.status(500).send({ message: 'Error processing your request', error: err })
-                        } else {
-                            chef.restaurant = restaurant
-                            chef.save({}, (err) => {
-                                if (err) {
-                                    res.status(500).send({ message: 'Error processing your request', error: err })
-                                } else {
-                                    res.status(201).send({ message: 'Restaurant successfully created', data: restaurant })
-                                }
-                            })
-                        }
-                    })
-                }
+                res.status(201).send({ message: 'Restaurant successfully created', data: restaurant })
             }
         })
     }

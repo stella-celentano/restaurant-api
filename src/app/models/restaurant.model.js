@@ -30,10 +30,10 @@ const RestaurantSchema = new Schema({
         type: String,
         trim: true
     },
-    chef: {
+    chef: [{
         type: Schema.Types.ObjectId,
         ref: 'chefschema'
-    }
+    }]
 },
     {
         timestamps: true,
