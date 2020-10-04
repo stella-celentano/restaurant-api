@@ -22,7 +22,8 @@ const ChefSchema = new Schema({
     },
     restaurant: {
         type: Schema.Types.ObjectId,
-        ref: 'restaurantschema'
+        ref: 'restaurantschema',
+        required: true
     }
 },
 {
