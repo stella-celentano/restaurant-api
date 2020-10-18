@@ -69,24 +69,71 @@ class Chef {
         })
     }
 
-    updateChef(req, res) {
-        chefschema.updateOne({ name: req.params.name }, { $set: req.body }, (err) => {
+    update(req, res) {
+        const { chefID } = req.params
+        const reqBody = req.body
+        const restaurantID = reqBody['restaurant']
+
+        chefschema.updateOne({ _id: chefID }, { $set: reqBody }, (err, chef) => {
             if (err) {
-                res.status(500).send({ message: 'Error processing your request', error: err })
+                res.status(500).send({ message: "Houve um erro ao processar a sua requisição" })
             } else {
-                res.status(200).send({ message: 'Chef successfully updated' })
+                restaurantschema.findOne({ chef: chefID }, (err, result) => {
+                    if (err) {
+                        res.status(500).send({ message: "Houve um erro ao processar a sua requisição" })
+                    } else {
+                        if (result['_id'] == restaurantID) {
+                            res.status(200).send({ message: 'O chef foi atualizado com sucesso', data: chef })
+                        } else {
+                            result.chef.pull(chefID)
+                            result.save({}, (err) => {
+                                if (err) {
+                                    res.status(500).send({ message: "Houve um erro ao processar a sua requisição" })
+                                } else {
+                                    restaurantschema.findById(restaurantID, (err, restaurant) => {
+                                        if (err) {
+                                            res.status(500).send({ message: "Houve um erro ao processar a sua requisição" })
+                                        } else {
+                                            restaurant.chef.push(chefID)
+                                            restaurant.save({}, (err) => {
+                                                if (err) {
+                                                    res.status(500).send({ message: "Houve um erro ao processar a sua requisição" })
+                                                } else {
+                                                    res.status(200).send({ message: 'O chef foi atualizado com sucesso', data: chef })
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    }
+                })
             }
         })
     }
 
-    deleteChef(req, res) {
-        const { name } = req.params
+    delete(req, res) {
+        const { chefID } = req.params
 
-        chefschema.deleteOne({ name }, (err) => {
+        restaurantschema.findOne({ chef: chefID }, (err, restaurant) => {
             if (err) {
-                res.status(500).send({ message: 'Error processing your request', error: err })
+                res.status(500).send({ message: "Houve um erro ao processar a sua requisição", error: err })
             } else {
-                res.status(200).send({ message: `Chef ${name} successfully deleted` })
+                restaurant.chef.pull(chefID)
+                restaurant.save((err) => {
+                    if (err) {
+                        res.status(500).send({ message: "Houve um erro ao processar a sua requisição", error: err })
+                    } else {
+                        chefschema.deleteOne({ _id: chefID }, (err, result) => {
+                            if (err) {
+                                res.status(500).send({ message: "Houve um erro ao processar a sua requisição", error: err })
+                            } else {
+                                res.status(200).send({ message: "O chef foi apagado com sucesso", data: result })
+                            }
+                        })
+                    }
+                })
             }
         })
     }

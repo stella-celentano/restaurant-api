@@ -8,7 +8,7 @@ route.get('/getAllChefs', ChefController.getAllChefs);
 route.get('/getOne/:name', ChefController.getChefByName);
 route.post('/createChef', ChefController.createChef);
 route.get('/validarNomeChef', ChefController.validarNomeChef);
-route.put('/updateChef/:name', ChefController.updateChef);
-route.delete('/deleteChef/:name', ChefController.deleteChef);
+route.put('/updateChef/:chefID', ChefController.update);
+route.delete('/deleteChef/:chefID', ChefController.delete);
 
 module.exports = route;
