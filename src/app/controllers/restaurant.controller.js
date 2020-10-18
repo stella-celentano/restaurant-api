@@ -54,23 +54,38 @@ class Restaurant {
     }
 
     updateRestaurant(req, res) {
-        restaurantschema.updateOne({ name: req.params.name }, { $set: req.body }, (err) => {
+        const { restaurantID } = req.params;
+        const reqBody = req.body
+
+        restaurantschema.updateOne({ _id: restaurantID }, { $set: reqBody }, (err, restaurant) => {
             if (err) {
                 res.status(500).send({ message: 'Error processing your request', error: err })
             } else {
-                res.status(200).send({ message: 'Restaurant successfully updated' })
+                res.status(200).send({ message: 'Restaurant successfully updated', data: restaurant })
             }
         })
     }
 
     deleteRestaurant(req, res) {
-        const { name } = req.params
+        const { restaurantID } = req.params;
 
-        restaurantschema.deleteOne({ name }, (err) => {
+        restaurantschema.findOne({ _id: restaurantID }, (err) => {
             if (err) {
                 res.status(500).send({ message: 'Error processing your request', error: err })
             } else {
-                res.status(200).send({ message: `Restaurant ${name} successfully deleted` })
+                chefschema.deleteMany({ restaurant: restaurantID }, (err) => {
+                    if (err) {
+                        res.status(500).send({ message: 'Error processing your request', error: err })
+                    } else {
+                        restaurantschema.deleteOne({ _id: restaurantID }, (err, restaurant) => {
+                            if (err) {
+                                res.status(500).send({ message: 'Error processing your request', error: err })
+                            } else {
+                                res.status(200).send({ message: `Restaurant successfully deleted`, data: restaurant})
+                            }
+                        })
+                    }
+                })
             }
         })
     }
